@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const { UserRepository } = require("../repositories");
 const AppError = require("../utils/error/app-error");
+const { Auth } = require("../utils/common");
 
 const userRepository = new UserRepository();
 
@@ -22,6 +23,42 @@ async function signUp(data) {
     }
 }
 
+async function signIn(data) {
+    try {
+        const user = await userRepository.getUserByEmail(data.email);
+        if (!user) {
+            throw new AppError(
+                "User not exists corresponding to the email.",
+                StatusCodes.BAD_REQUEST
+            );
+        }
+
+        const isPasswordValid = await Auth.checkPassword(
+            data.password,
+            user.password
+        );
+        if (!isPasswordValid) {
+            throw new AppError("Invalid Credentials", StatusCodes.BAD_REQUEST);
+        }
+
+        const token = Auth.createJWTToken({
+            id: user.id,
+            email: user.email,
+        });
+
+        return token;
+    } catch (error) {
+        if (error.statusCode == StatusCodes.BAD_REQUEST) {
+            throw new AppError(error.explanation, error.statusCode);
+        }
+        throw new AppError(
+            "Something went wrong while fetching user info.",
+            StatusCodes.INTERNAL_SERVER_ERROR
+        );
+    }
+}
+
 module.exports = {
     signUp,
+    signIn,
 };
