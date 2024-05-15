@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-// const apiRoutes = require("./routes");
+const apiRoutes = require("./routes");
 const { ServerConfig, LoggerConfig } = require("./config");
 
 const PORT = ServerConfig.PORT;
@@ -13,7 +13,7 @@ app.use(
         stream: LoggerConfig.accessLogStream,
     })
 );
-// app.use("/api", apiRoutes);
+app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is Up and Running on PORT:- ${PORT}`);
