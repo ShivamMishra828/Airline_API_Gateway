@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             this.belongsToMany(models.User, {
-                through: UserRoles,
-                uniqueKey: "userId",
+                through: "User_Roles",
+                as: "role",
             });
         }
     }
