@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsToMany(models.Role, {
                 through: "User_Roles",
-                as: "user",
+                as: "role",
             });
         }
     }
