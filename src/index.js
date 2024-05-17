@@ -20,6 +20,7 @@ app.use(
     })
 );
 app.use(limiter);
+app.use("/api", apiRoutes);
 app.use(
     "/flightsService",
     createProxyMiddleware({
@@ -34,7 +35,6 @@ app.use(
         changeOrigin: true,
     })
 );
-app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is Up and Running on PORT:- ${PORT}`);

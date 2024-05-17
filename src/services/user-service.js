@@ -99,8 +99,51 @@ async function isAuthenticated(token) {
     }
 }
 
+async function addRoleToUser(data) {
+    try {
+        const user = await userRepository.get(data.id);
+        const role = await roleRepository.getRoleByName(data.role);
+        user.addRole(role);
+        return user;
+    } catch (error) {
+        if (error.name == "SequelizeUniqueConstraintError") {
+            throw new AppError(
+                "Given Email is already exists, try again with another one.",
+                StatusCodes.BAD_REQUEST
+            );
+        }
+        throw new AppError(
+            "Something went wrong while creating new user object.",
+            StatusCodes.INTERNAL_SERVER_ERROR
+        );
+    }
+}
+
+async function isAdmin(id) {
+    try {
+        const user = await userRepository.get(id);
+        const adminRole = await roleRepository.getRoleByName(
+            ENUMS.USER_ROLES_ENUMS.ADMIN
+        );
+        return user.hasRole(adminRole);
+    } catch (error) {
+        if (error.name == "SequelizeUniqueConstraintError") {
+            throw new AppError(
+                "Given Email is already exists, try again with another one.",
+                StatusCodes.BAD_REQUEST
+            );
+        }
+        throw new AppError(
+            "Something went wrong while creating new user object.",
+            StatusCodes.INTERNAL_SERVER_ERROR
+        );
+    }
+}
+
 module.exports = {
     signUp,
     signIn,
     isAuthenticated,
+    addRoleToUser,
+    isAdmin,
 };
